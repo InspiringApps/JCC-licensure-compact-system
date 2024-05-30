@@ -2,7 +2,7 @@
   "openapi" : "3.0.1",
   "info" : {
     "title" : "LicenseApi",
-    "version" : "2024-05-30T05:55:07Z"
+    "version" : "2024-05-30T18:07:45Z"
   },
   "servers" : [ {
     "url" : "https://tu5xn5do23.execute-api.us-east-1.amazonaws.com/{basePath}",
@@ -41,6 +41,84 @@
       }
     },
     "/v0/licenses-noauth" : {
+      "options" : {
+        "responses" : {
+          "204" : {
+            "description" : "204 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Methods" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Headers" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : { }
+          }
+        }
+      }
+    },
+    "/v0/licenses-noauth/kentucky" : {
+      "post" : {
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/APIStaLicenMObmpi5X9gK4"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIStaLicenhRlQ9DP30WAQ"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options" : {
+        "responses" : {
+          "204" : {
+            "description" : "204 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Methods" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Headers" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : { }
+          }
+        }
+      }
+    },
+    "/v0/licenses-noauth/colorado" : {
       "post" : {
         "requestBody" : {
           "content" : {
@@ -124,9 +202,12 @@
       "APIStaLicenMObmpi5X9gK4" : {
         "type" : "array",
         "items" : {
-          "required" : [ "date_of_birth", "date_of_expiration", "date_of_issuance", "date_of_renewal", "first_name", "home_state_address", "jurisdiction", "last_name", "license_status", "license_type", "npi" ],
+          "required" : [ "date_of_birth", "date_of_expiration", "date_of_issuance", "date_of_renewal", "first_name", "home_state_address", "last_name", "license_status", "license_type", "npi" ],
           "type" : "object",
           "properties" : {
+            "home_state_address" : {
+              "type" : "string"
+            },
             "date_of_issuance" : {
               "pattern" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
               "type" : "string",
@@ -144,16 +225,24 @@
               "type" : "string",
               "enum" : [ "speech language", "pathology" ]
             },
-            "jurisdiction" : {
-              "maxLength" : 100,
-              "minLength" : 4,
-              "type" : "string"
-            },
             "last_name" : {
               "type" : "string"
             },
+            "date_of_expiration" : {
+              "pattern" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type" : "string",
+              "format" : "date"
+            },
             "middle_name" : {
               "type" : "string"
+            },
+            "first_name" : {
+              "type" : "string"
+            },
+            "date_of_renewal" : {
+              "pattern" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type" : "string",
+              "format" : "date"
             },
             "license_status" : {
               "type" : "string",
@@ -164,22 +253,6 @@
               "additionalProperties" : {
                 "type" : "string"
               }
-            },
-            "home_state_address" : {
-              "type" : "string"
-            },
-            "date_of_expiration" : {
-              "pattern" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-              "type" : "string",
-              "format" : "date"
-            },
-            "first_name" : {
-              "type" : "string"
-            },
-            "date_of_renewal" : {
-              "pattern" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-              "type" : "string",
-              "format" : "date"
             }
           },
           "additionalProperties" : false

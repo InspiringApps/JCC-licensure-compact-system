@@ -17,10 +17,10 @@ class StandardTags(dict):
             **kwargs
     ):
         super().__init__(
-            compact=compact,
-            project=project,
-            service=service,
-            environment=environment,
+            Compact=compact,
+            Project=project,
+            Service=service,
+            Environment=environment,
             **kwargs
         )
 

@@ -8,10 +8,12 @@ class ApiStack(Stack):
     def __init__(
             self, scope: Construct, construct_id: str, *,
             environment_name: str,
+            compact_context: dict,
             **kwargs
     ):
         super().__init__(scope, construct_id, **kwargs)
         self.license_api = LicenseApi(
             self, 'LicenseApi',
-            environment_name=environment_name
+            environment_name=environment_name,
+            compact_context=compact_context
         )

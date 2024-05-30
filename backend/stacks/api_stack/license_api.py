@@ -1,21 +1,22 @@
 import json
 from functools import cached_property
 
-from aws_cdk.aws_apigateway import RestApi, StageOptions, MethodLoggingLevel, MockIntegration, IntegrationResponse, \
-    LogGroupLogDestination, AccessLogFormat, AuthorizationType, MethodResponse, MethodOptions, Resource, \
-    JsonSchema, JsonSchemaType, ResponseType, CorsOptions, Cors
+from aws_cdk.aws_apigateway import RestApi, StageOptions, MethodLoggingLevel, LogGroupLogDestination, \
+    AccessLogFormat, AuthorizationType, MethodOptions, JsonSchema, JsonSchemaType, ResponseType, CorsOptions, Cors
 from aws_cdk.aws_logs import LogGroup, RetentionDays
 from cdk_nag import NagSuppressions
 from constructs import Construct
 
 from common_constructs.stack import Stack
 from common_constructs.webacl import WebACL, WebACLScope
+from stacks.api_stack.post_license import PostLicenses
 
 
 class LicenseApi(RestApi):
     def __init__(
             self, scope: Construct, construct_id: str, *,
             environment_name: str,
+            compact_context: dict,
             **kwargs
     ):
         access_log_group = LogGroup(
@@ -69,6 +70,9 @@ class LicenseApi(RestApi):
             ),
             **kwargs
         )
+
+        self.compact_context = compact_context
+
         self.web_acl = WebACL(
             self, 'WebACL',
             acl_scope=WebACLScope.REGIONAL
@@ -94,7 +98,10 @@ class LicenseApi(RestApi):
                 authorization_type=AuthorizationType.NONE
             )
         )
-        self._add_post_license(license_noauth_resource)
+
+        for jurisdiction in compact_context['jurisdictions']:
+            jurisdiction_resource = license_noauth_resource.add_resource(jurisdiction)
+            PostLicenses(jurisdiction_resource)
 
         stack = Stack.of(self)
         NagSuppressions.add_resource_suppressions_by_path(
@@ -135,37 +142,6 @@ class LicenseApi(RestApi):
             ]
         )
 
-    def _add_post_license(self, resource: Resource):
-        resource.add_method(
-            'POST',
-            authorization_type=AuthorizationType.NONE,
-            request_validator=self.parameter_body_validator,
-            request_models={
-                'application/json': self.post_license_model
-            },
-            method_responses=[
-                MethodResponse(
-                    status_code='200',
-                    response_models={
-                        'application/json': self.message_response_model
-                    }
-                )
-            ],
-            integration=MockIntegration(
-                request_templates={
-                    'application/json': '{"statusCode": 200}'
-                },
-                integration_responses=[
-                    IntegrationResponse(
-                        status_code='200',
-                        response_templates={
-                            'application/json': '{"message": "OK"}'
-                        }
-                    )
-                ]
-            )
-        )
-
     @cached_property
     def parameter_body_validator(self):
         return self.add_request_validator(
@@ -174,75 +150,6 @@ class LicenseApi(RestApi):
             validate_request_parameters=True
         )
 
-    @cached_property
-    def post_license_model(self):
-        ymd_format = '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
-        return self.add_model(
-            'PostLicenseModel',
-            schema=JsonSchema(
-                type=JsonSchemaType.ARRAY,
-                items=JsonSchema(
-                    type=JsonSchemaType.OBJECT,
-                    required=[
-                        'npi',
-                        'first_name',
-                        'last_name',
-                        'date_of_birth',
-                        'home_state_address',
-                        'jurisdiction',
-                        'license_type',
-                        'date_of_issuance',
-                        'date_of_renewal',
-                        'date_of_expiration',
-                        'license_status'
-                    ],
-                    additional_properties=False,
-                    properties={
-                        'npi': JsonSchema(type=JsonSchemaType.STRING),
-                        'first_name': JsonSchema(type=JsonSchemaType.STRING),
-                        'middle_name': JsonSchema(type=JsonSchemaType.STRING),
-                        'last_name': JsonSchema(type=JsonSchemaType.STRING),
-                        'date_of_birth': JsonSchema(
-                            type=JsonSchemaType.STRING,
-                            pattern=ymd_format,
-                            format='date'
-                        ),
-                        'other_identifiers': JsonSchema(
-                            type=JsonSchemaType.OBJECT,
-                            additional_properties=JsonSchema(type=JsonSchemaType.STRING)
-                        ),
-                        'home_state_address': JsonSchema(type=JsonSchemaType.STRING),
-                        'jurisdiction': JsonSchema(type=JsonSchemaType.STRING, min_length=4, max_length=100),
-                        'license_type': JsonSchema(
-                            type=JsonSchemaType.STRING,
-                            enum=self.node.get_context('license_types')
-                        ),
-                        'date_of_issuance': JsonSchema(
-                            type=JsonSchemaType.STRING,
-                            pattern=ymd_format,
-                            format='date'
-                        ),
-                        'date_of_renewal': JsonSchema(
-                            type=JsonSchemaType.STRING,
-                            pattern=ymd_format,
-                            format='date'
-                        ),
-                        'date_of_expiration': JsonSchema(
-                            type=JsonSchemaType.STRING,
-                            pattern=ymd_format,
-                            format='date'
-                        ),
-                        'license_status': JsonSchema(
-                            type=JsonSchemaType.STRING,
-                            enum=[
-                                'active',
-                                'inactive'
-                            ]
-                        )
-                    }
-                )
-            )
-        )
 
     @cached_property
     def message_response_model(self):

@@ -10,6 +10,10 @@ class LicensureApp(App):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         environment_name = self.node.get_context('environment_name')
+
+        compact_name = self.node.get_context('compact')
+        compact_context = self.node.get_context('compacts')[compact_name]
+
         tags = self.node.get_context('tags')
 
         self.persistent_stack = PersistentStack(
@@ -27,7 +31,8 @@ class LicensureApp(App):
                 **tags,
                 environment=environment_name
             ),
-            environment_name=environment_name
+            environment_name=environment_name,
+            compact_context=compact_context
         )
 
 
