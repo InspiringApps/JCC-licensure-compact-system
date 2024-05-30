@@ -20,6 +20,10 @@
       "project": "licensure-compact-system",
       "service": "license-data"
     },
+    "license_types": [
+      "speech language",
+      "pathology"
+    ],
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [

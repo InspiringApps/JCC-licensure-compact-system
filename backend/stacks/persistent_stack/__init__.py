@@ -31,5 +31,5 @@ class PersistentStack(Stack):
             self, 'LicenseTable',
             environment_name=environment_name,
             encryption_key=self.shared_encryption_key,
-            removal_policy=removal_policy
+            removal_policy=removal_policy,
         )

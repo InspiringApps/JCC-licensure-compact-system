@@ -16,7 +16,11 @@ class TestLicensureApp(TestCase):
         with open('cdk.context.example.json', 'r') as f:
             context.update(json.load(f))
         app = LicensureApp(context=context)
+
+        # Identify any findings from our AwsSolutions or HIPAASecurity rule sets
         self._check_no_annotations(app.persistent_stack)
+        self._check_no_annotations(app.api_stack)
+
         # template = assertions.Template.from_stack(app.backend_stack)
 
     def _check_no_annotations(self, stack: Stack):

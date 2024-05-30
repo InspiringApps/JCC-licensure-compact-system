@@ -2,6 +2,7 @@
 from aws_cdk import App
 
 from common_constructs.stack import StandardTags
+from stacks.api_stack import ApiStack
 from stacks.persistent_stack import PersistentStack
 
 
@@ -12,7 +13,16 @@ class LicensureApp(App):
         tags = self.node.get_context('tags')
 
         self.persistent_stack = PersistentStack(
-            self, "BackendStack",
+            self, 'PersistentStack',
+            standard_tags=StandardTags(
+                **tags,
+                environment=environment_name
+            ),
+            environment_name=environment_name
+        )
+
+        self.api_stack = ApiStack(
+            self, 'APIStack',
             standard_tags=StandardTags(
                 **tags,
                 environment=environment_name

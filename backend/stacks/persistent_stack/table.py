@@ -1,7 +1,6 @@
 from aws_cdk import Duration, RemovalPolicy, Stack
 from aws_cdk.aws_backup import BackupPlan, BackupPlanRule, BackupResource, BackupVault
-from aws_cdk.aws_dynamodb import Table, BillingMode, Attribute, AttributeType, ProjectionType, \
-    TableEncryption
+from aws_cdk.aws_dynamodb import Table, BillingMode, Attribute, AttributeType, TableEncryption
 from aws_cdk.aws_events import Schedule
 from aws_cdk.aws_iam import ServicePrincipal
 from aws_cdk.aws_kms import IKey
@@ -29,6 +28,7 @@ class LicenseDataTable(Table):
             point_in_time_recovery=True,
             partition_key=Attribute(name='pk', type=AttributeType.STRING),
             sort_key=Attribute(name='sk', type=AttributeType.STRING),
+            time_to_live_attribute='ttl',
             **kwargs
         )
 
