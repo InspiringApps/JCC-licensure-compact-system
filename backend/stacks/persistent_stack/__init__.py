@@ -3,6 +3,7 @@ from aws_cdk.aws_kms import Key
 from constructs import Construct
 
 from common_constructs.stack import Stack
+from stacks.persistent_stack.board_users import BoardUsers
 from stacks.persistent_stack.table import LicenseDataTable
 
 
@@ -15,6 +16,8 @@ class PersistentStack(Stack):
     def __init__(
             self, scope: Construct, construct_id: str, *,
             environment_name: str,
+            compact_name: str,
+            compact_context: dict,
             **kwargs
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -32,4 +35,13 @@ class PersistentStack(Stack):
             environment_name=environment_name,
             encryption_key=self.shared_encryption_key,
             removal_policy=removal_policy,
+        )
+
+        self.board_users = BoardUsers(
+            self, 'BoardUsers',
+            cognito_domain_prefix=f'{compact_name}-board-compact',
+            environment_name=environment_name,
+            compact_context=compact_context,
+            encryption_key=self.shared_encryption_key,
+            removal_policy=removal_policy
         )

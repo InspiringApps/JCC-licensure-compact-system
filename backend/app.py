@@ -22,7 +22,9 @@ class LicensureApp(App):
                 **tags,
                 environment=environment_name
             ),
-            environment_name=environment_name
+            environment_name=environment_name,
+            compact_name=compact_name,
+            compact_context=compact_context
         )
 
         self.api_stack = ApiStack(
@@ -32,7 +34,8 @@ class LicensureApp(App):
                 environment=environment_name
             ),
             environment_name=environment_name,
-            compact_context=compact_context
+            compact_context=compact_context,
+            persistent_stack=self.persistent_stack
         )
 
 

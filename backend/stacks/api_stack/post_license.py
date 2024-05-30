@@ -1,21 +1,21 @@
 from __future__ import annotations
 
 from aws_cdk.aws_apigateway import Resource, MethodResponse, MockIntegration, IntegrationResponse, JsonSchema, \
-    JsonSchemaType
+    JsonSchemaType, MethodOptions, AuthorizationType
 
 # Importing module level to allow lazy loading for typing
 from . import license_api
 
 
 class PostLicenses:
-    def __init__(self, resource: Resource):
+    def __init__(self, resource: Resource, method_options: MethodOptions):
         super().__init__()
 
         self.resource = resource
         self.api: license_api.LicenseApi = resource.api
-        self._add_post_license()
+        self._add_post_license(method_options=method_options)
 
-    def _add_post_license(self):
+    def _add_post_license(self, method_options: MethodOptions):
         self.resource.add_method(
             'POST',
             request_validator=self.api.parameter_body_validator,
@@ -42,7 +42,12 @@ class PostLicenses:
                         }
                     )
                 ]
-            )
+            ),
+            request_parameters={
+                'method.request.header.Authorization': True
+            } if method_options.authorization_type != AuthorizationType.NONE else {},
+            authorization_type=method_options.authorization_type,
+            authorizer=method_options.authorizer
         )
 
     @staticmethod

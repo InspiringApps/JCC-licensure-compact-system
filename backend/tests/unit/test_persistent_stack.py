@@ -2,9 +2,8 @@ import json
 from unittest import TestCase
 
 from aws_cdk import Stack
-from aws_cdk.assertions import Annotations, Match
-
-# import aws_cdk.assertions as assertions
+from aws_cdk.assertions import Annotations, Match, Template
+from aws_cdk.aws_apigateway import CfnMethod
 
 from app import LicensureApp
 
@@ -21,7 +20,20 @@ class TestLicensureApp(TestCase):
         self._check_no_annotations(app.persistent_stack)
         self._check_no_annotations(app.api_stack)
 
-        # template = assertions.Template.from_stack(app.backend_stack)
+        api_template = Template.from_stack(app.api_stack)
+
+        with self.assertRaises(RuntimeError):
+            # This is an indicator of unintentional (and invalid) authorizer configuration in the API
+            # not matching is desired in this case and raises a RuntimeError
+            api_template.has_resource(
+                type=CfnMethod.CFN_RESOURCE_TYPE_NAME,
+                props={
+                    'Properties': {
+                        'AuthorizationScopes': Match.any_value(),
+                        'AuthorizationType': 'NONE'
+                    }
+                }
+            )
 
     def _check_no_annotations(self, stack: Stack):
         errors = Annotations.from_stack(stack).find_error(

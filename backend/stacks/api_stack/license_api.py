@@ -2,7 +2,8 @@ import json
 from functools import cached_property
 
 from aws_cdk.aws_apigateway import RestApi, StageOptions, MethodLoggingLevel, LogGroupLogDestination, \
-    AccessLogFormat, AuthorizationType, MethodOptions, JsonSchema, JsonSchemaType, ResponseType, CorsOptions, Cors
+    AccessLogFormat, AuthorizationType, MethodOptions, JsonSchema, JsonSchemaType, ResponseType, CorsOptions, Cors, \
+    CognitoUserPoolsAuthorizer
 from aws_cdk.aws_logs import LogGroup, RetentionDays
 from cdk_nag import NagSuppressions
 from constructs import Construct
@@ -10,6 +11,7 @@ from constructs import Construct
 from common_constructs.stack import Stack
 from common_constructs.webacl import WebACL, WebACLScope
 from stacks.api_stack.post_license import PostLicenses
+from stacks import persistent_stack as ps
 
 
 class LicenseApi(RestApi):
@@ -17,6 +19,7 @@ class LicenseApi(RestApi):
             self, scope: Construct, construct_id: str, *,
             environment_name: str,
             compact_context: dict,
+            persistent_stack: ps.PersistentStack,
             **kwargs
     ):
         access_log_group = LogGroup(
@@ -71,6 +74,7 @@ class LicenseApi(RestApi):
             **kwargs
         )
 
+        self._persistent_stack = persistent_stack
         self.compact_context = compact_context
 
         self.web_acl = WebACL(
@@ -93,15 +97,31 @@ class LicenseApi(RestApi):
 
         v0_resource = self.root.add_resource('v0')
 
-        license_noauth_resource = v0_resource.add_resource(
-            'licenses-noauth', default_method_options=MethodOptions(
-                authorization_type=AuthorizationType.NONE
-            )
-        )
+        # No auth mock endpoints
+        license_noauth_resource = v0_resource.add_resource('licenses-noauth')
 
         for jurisdiction in compact_context['jurisdictions']:
             jurisdiction_resource = license_noauth_resource.add_resource(jurisdiction)
-            PostLicenses(jurisdiction_resource)
+            PostLicenses(
+                jurisdiction_resource,
+                method_options=MethodOptions(
+                    authorization_type=AuthorizationType.NONE
+                )
+            )
+
+        # Authenticated endpoints
+        self.license_resource = v0_resource.add_resource('licenses')
+
+        for jurisdiction in compact_context['jurisdictions']:
+            jurisdiction_resource = self.license_resource.add_resource(jurisdiction)
+            PostLicenses(
+                jurisdiction_resource,
+                method_options=MethodOptions(
+                    authorization_type=AuthorizationType.COGNITO,
+                    authorizer=self.board_users_authorizer,
+                    authorization_scopes=[persistent_stack.board_users.scopes[jurisdiction].scope_name]
+                )
+            )
 
         stack = Stack.of(self)
         NagSuppressions.add_resource_suppressions_by_path(
@@ -140,6 +160,13 @@ class LicenseApi(RestApi):
                     'reason': 'We will implement authorization soon'
                 }
             ]
+        )
+
+    @cached_property
+    def board_users_authorizer(self):
+        return CognitoUserPoolsAuthorizer(
+            self, 'BoardPoolsAuthorizer',
+            cognito_user_pools=[self._persistent_stack.board_users]
         )
 
     @cached_property
