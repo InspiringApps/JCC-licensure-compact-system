@@ -58,6 +58,7 @@ class PostLicenses:
             'PostLicenseModel',
             schema=JsonSchema(
                 type=JsonSchemaType.ARRAY,
+                max_length=100,
                 items=JsonSchema(
                     type=JsonSchemaType.OBJECT,
                     required=[
