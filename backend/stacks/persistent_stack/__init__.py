@@ -41,7 +41,7 @@ class PersistentStack(Stack):
             access_logs_bucket=self.access_logs_bucket,
             encryption_key=self.shared_encryption_key,
             removal_policy=removal_policy,
-            auto_delete_objects=False if environment_name == 'prod' else True
+            auto_delete_objects=environment_name != 'prod'
         )
 
         self.board_users = BoardUsers(

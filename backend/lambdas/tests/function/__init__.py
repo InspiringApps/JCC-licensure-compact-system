@@ -21,7 +21,7 @@ class TstFunction(TstLambdas):
     Base class to set up Moto mocking and create mock AWS resources for functional testing
     """
 
-    def setUp(self):
+    def setUp(self):  # pylint: disable=invalid-name
         super().setUp()
 
         self._os_patch = patch.dict(os.environ, {

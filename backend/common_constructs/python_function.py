@@ -23,7 +23,7 @@ class PythonFunction(CdkPythonFunction):
         }
         defaults.update(kwargs)
 
-        super().__init__(
+        super().__init__(  # pylint: disable=missing-kwoa
             scope, construct_id,
             bundling=BundlingOptions(command_hooks=TestingHooks()),
             runtime=Runtime.PYTHON_3_12,
