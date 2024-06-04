@@ -1,7 +1,8 @@
 from aws_cdk import CfnOutput, Duration
 from aws_cdk.aws_cognito import UserPool, UserPoolEmail, AccountRecovery, AutoVerifiedAttrs, AdvancedSecurityMode, \
     DeviceTracking, Mfa, MfaSecondFactor, PasswordPolicy, StandardAttributes, StandardAttribute, StringAttribute, \
-    CognitoDomainOptions, AuthFlow, OAuthSettings, OAuthFlows, ClientAttributes, ResourceServerScope
+    CognitoDomainOptions, AuthFlow, OAuthSettings, OAuthFlows, ClientAttributes, ResourceServerScope, \
+    CfnUserPoolRiskConfigurationAttachment
 from aws_cdk.aws_kms import IKey
 from cdk_nag import NagSuppressions
 from constructs import Construct
@@ -34,11 +35,7 @@ class BoardUsers(UserPool):
             mfa=Mfa.REQUIRED if environment_name in ('prod', 'test') else Mfa.OPTIONAL,
             mfa_second_factor=MfaSecondFactor(otp=True, sms=False),
             password_policy=PasswordPolicy(
-                min_length=12,
-                require_digits=True,
-                require_symbols=True,
-                require_lowercase=True,
-                require_uppercase=True
+                min_length=12
             ),
             self_sign_up_enabled=False,
             sign_in_aliases=None,
@@ -69,6 +66,16 @@ class BoardUsers(UserPool):
                     }
                 ]
             )
+        NagSuppressions.add_resource_suppressions(
+            self,
+            suppressions=[
+                {
+                    'id': 'AwsSolutions-COG1',
+                    'reason': 'OWASP ASVS v4.0.3-2.1.9 specifically prohibits requirements on upper or lower case or'
+                    ' numbers or special characters.'
+                }
+            ]
+        )
 
         self.add_domain(
             'APIDomain',
@@ -79,6 +86,31 @@ class BoardUsers(UserPool):
 
         CfnOutput(self, 'UserPoolId', value=self.user_pool_id)
 
+        self._add_resource_server(compact_context=compact_context)
+        self._add_ui_client()
+        self._add_risk_configuration()
+
+        # We will create some admins to get access started for the app and for support
+        # for email in compact_context.get('admins', []):
+        #     user = CfnUserPoolUser(
+        #         self, f'Admin{email}',
+        #         user_pool_id=self.user_pool_id,
+        #         username=email,
+        #         user_attributes=[
+        #             CfnUserPoolUser.AttributeTypeProperty(
+        #                 name='email',
+        #                 value=email
+        #             ),
+        #             CfnUserPoolUser.AttributeTypeProperty(
+        #                 name='custom:jurisdiction',
+        #                 value='colorado'
+        #             )
+        #         ],
+        #         desired_delivery_mediums=['EMAIL']
+        #     )
+        #     user.add_dependency(self.node.default_child)
+
+    def _add_resource_server(self, compact_context: dict):
         self.scopes = {
             jurisdiction: ResourceServerScope(
                 scope_name=jurisdiction,
@@ -92,7 +124,8 @@ class BoardUsers(UserPool):
             scopes=list(self.scopes.values())
         )
 
-        self.user_pool_client = self.add_client(
+    def _add_ui_client(self):
+        self.ui_client = self.add_client(
             'UIClient',
             auth_flows=AuthFlow(
                 admin_user_password=True,
@@ -121,22 +154,35 @@ class BoardUsers(UserPool):
             read_attributes=ClientAttributes().with_custom_attributes('jurisdiction')
         )
 
-        # We will create some admins to get access started for the app and for support
-        # for email in compact_context.get('admins', []):
-        #     user = CfnUserPoolUser(
-        #         self, f'Admin{email}',
-        #         user_pool_id=self.user_pool_id,
-        #         username=email,
-        #         user_attributes=[
-        #             CfnUserPoolUser.AttributeTypeProperty(
-        #                 name='email',
-        #                 value=email
-        #             ),
-        #             CfnUserPoolUser.AttributeTypeProperty(
-        #                 name='custom:jurisdiction',
-        #                 value='colorado'
-        #             )
-        #         ],
-        #         desired_delivery_mediums=['EMAIL']
-        #     )
-        #     user.add_dependency(self.node.default_child)
+    def _add_risk_configuration(self):
+        CfnUserPoolRiskConfigurationAttachment(
+            self, 'UserPoolRiskConfiguration',
+            # Applies to all clients
+            client_id='ALL',
+            user_pool_id=self.user_pool_id,
+            # If Cognito suspects an account take-over event, block all actions and notify the user
+            account_takeover_risk_configuration=
+            CfnUserPoolRiskConfigurationAttachment.AccountTakeoverRiskConfigurationTypeProperty(
+                actions=CfnUserPoolRiskConfigurationAttachment.AccountTakeoverActionsTypeProperty(
+                    high_action=CfnUserPoolRiskConfigurationAttachment.AccountTakeoverActionTypeProperty(
+                        event_action='BLOCK',
+                        notify=True
+                    ),
+                    medium_action=CfnUserPoolRiskConfigurationAttachment.AccountTakeoverActionTypeProperty(
+                        event_action='BLOCK',
+                        notify=True
+                    ),
+                    low_action=CfnUserPoolRiskConfigurationAttachment.AccountTakeoverActionTypeProperty(
+                        event_action='BLOCK',
+                        notify=True
+                    )
+                )
+            ),
+            # If Cognito detects the user trying to register compromised credentials, block the activity
+            compromised_credentials_risk_configuration=
+            CfnUserPoolRiskConfigurationAttachment.CompromisedCredentialsRiskConfigurationTypeProperty(
+                actions=CfnUserPoolRiskConfigurationAttachment.CompromisedCredentialsActionsTypeProperty(
+                    event_action='BLOCK'
+                )
+            )
+        )

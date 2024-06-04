@@ -30,24 +30,10 @@ class WebACL(Resource):
         super().__init__(scope, construct_id)
 
         if rules is None:
-            self.rules = [{
-                'name': 'CRSRule',
-                'priority': 0,
-                'statement': {
-                    'managedRuleGroupStatement': {
-                        'name': 'AWSManagedRulesCommonRuleSet',
-                        'vendorName': 'AWS'
-                    }
-                },
-                'visibilityConfig': {
-                    'cloudWatchMetricsEnabled': True,
-                    'metricName': 'MetricForWebACL-CRS-' + construct_id,
-                    'sampledRequestsEnabled': True,
-                },
-                'overrideAction': {
-                    'none': {}
-                },
-            }]
+            self.rules = [
+                WebACLRules.rate_limit_rule(),
+                WebACLRules.common_rule()
+            ]
         else:
             self.rules = rules
 
@@ -146,3 +132,53 @@ class WebACL(Resource):
 
     def add_rule(self, rule: CfnWebACL.RuleProperty):
         self.rules.append(rule)
+
+
+class WebACLRules():
+    @staticmethod
+    def rate_limit_rule(limit: int = 100):
+        """
+        Limit calls to `limit` calls per 5 minutes for any IP
+        :param limit: The 5-minute call count limit. Default: 100.
+        """
+        # Limit calls to 100 per 5 minutes for any IP
+        return CfnWebACL.RuleProperty(
+            name='RateLimit',
+            priority=0,
+            statement=CfnWebACL.StatementProperty(
+                rate_based_statement=CfnWebACL.RateBasedStatementProperty(
+                    aggregate_key_type='IP',
+                    limit=limit
+                )
+            ),
+            visibility_config=CfnWebACL.VisibilityConfigProperty(
+                cloud_watch_metrics_enabled=True,
+                metric_name='MetricForWebACL-Rate',
+                sampled_requests_enabled=True
+            ),
+            action=CfnWebACL.RuleActionProperty(block={})
+        )
+
+    @staticmethod
+    def common_rule():
+        """
+        AWS-managed firewall rule set that protects from common attacks
+        """
+        return CfnWebACL.RuleProperty(
+            name='CRSRule',
+            priority=2,
+            statement=CfnWebACL.StatementProperty(
+                managed_rule_group_statement=CfnWebACL.ManagedRuleGroupStatementProperty(
+                    name='AWSManagedRulesCommonRuleSet',
+                    vendor_name='AWS'
+                )
+            ),
+            visibility_config=CfnWebACL.VisibilityConfigProperty(
+                cloud_watch_metrics_enabled=True,
+                metric_name='MetricForWebACL-CRS',
+                sampled_requests_enabled=True
+            ),
+            override_action=CfnWebACL.OverrideActionProperty(
+                none={}
+            )
+        )
