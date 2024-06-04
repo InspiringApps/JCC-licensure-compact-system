@@ -2,7 +2,7 @@
   "openapi" : "3.0.1",
   "info" : {
     "title" : "LicenseApi",
-    "version" : "2024-05-30T22:40:42Z"
+    "version" : "2024-06-04T00:14:49Z"
   },
   "servers" : [ {
     "url" : "https://tu5xn5do23.execute-api.us-east-1.amazonaws.com/{basePath}",
@@ -13,35 +13,8 @@
     }
   } ],
   "paths" : {
-    "/v0/licenses" : {
-      "options" : {
-        "responses" : {
-          "204" : {
-            "description" : "204 response",
-            "headers" : {
-              "Access-Control-Allow-Origin" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              },
-              "Access-Control-Allow-Methods" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              },
-              "Access-Control-Allow-Headers" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            },
-            "content" : { }
-          }
-        }
-      }
-    },
-    "/v0/licenses/kentucky" : {
-      "post" : {
+    "/v0/boards/ky/licenses/bulk-upload" : {
+      "get" : {
         "parameters" : [ {
           "name" : "Authorization",
           "in" : "header",
@@ -50,23 +23,13 @@
             "type" : "string"
           }
         } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/APIStaLicenMObmpi5X9gK4"
-              }
-            }
-          },
-          "required" : true
-        },
         "responses" : {
           "200" : {
             "description" : "200 response",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/APIStaLicenhRlQ9DP30WAQ"
+                  "$ref" : "#/components/schemas/APIStaLicen2ss8rvYEg35i"
                 }
               }
             }
@@ -102,7 +65,89 @@
         }
       }
     },
-    "/v0/licenses/colorado" : {
+    "/v0/boards/co/licenses-noauth/bulk-upload" : {
+      "get" : {
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIStaLicen2ss8rvYEg35i"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options" : {
+        "responses" : {
+          "204" : {
+            "description" : "204 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Methods" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Headers" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : { }
+          }
+        }
+      }
+    },
+    "/v0/boards/ky/licenses-noauth/bulk-upload" : {
+      "get" : {
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIStaLicen2ss8rvYEg35i"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options" : {
+        "responses" : {
+          "204" : {
+            "description" : "204 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Methods" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Headers" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : { }
+          }
+        }
+      }
+    },
+    "/v0/boards/co/licenses" : {
       "post" : {
         "parameters" : [ {
           "name" : "Authorization",
@@ -191,85 +236,7 @@
         }
       }
     },
-    "/v0/licenses-noauth" : {
-      "options" : {
-        "responses" : {
-          "204" : {
-            "description" : "204 response",
-            "headers" : {
-              "Access-Control-Allow-Origin" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              },
-              "Access-Control-Allow-Methods" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              },
-              "Access-Control-Allow-Headers" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            },
-            "content" : { }
-          }
-        }
-      }
-    },
-    "/v0/licenses-noauth/kentucky" : {
-      "post" : {
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/APIStaLicenMObmpi5X9gK4"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "200 response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/APIStaLicenhRlQ9DP30WAQ"
-                }
-              }
-            }
-          }
-        }
-      },
-      "options" : {
-        "responses" : {
-          "204" : {
-            "description" : "204 response",
-            "headers" : {
-              "Access-Control-Allow-Origin" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              },
-              "Access-Control-Allow-Methods" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              },
-              "Access-Control-Allow-Headers" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            },
-            "content" : { }
-          }
-        }
-      }
-    },
-    "/v0/licenses-noauth/colorado" : {
+    "/v0/boards/ky/licenses-noauth" : {
       "post" : {
         "requestBody" : {
           "content" : {
@@ -346,6 +313,252 @@
           }
         }
       }
+    },
+    "/v0/boards/ky/licenses" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/APIStaLicenMObmpi5X9gK4"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIStaLicenhRlQ9DP30WAQ"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "APIStackLicenseApiBoardPoolsAuthorizer9D2A9CD1" : [ ]
+        } ]
+      },
+      "options" : {
+        "responses" : {
+          "204" : {
+            "description" : "204 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Methods" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Headers" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : { }
+          }
+        }
+      }
+    },
+    "/v0/boards/co" : {
+      "options" : {
+        "responses" : {
+          "204" : {
+            "description" : "204 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Methods" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Headers" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : { }
+          }
+        }
+      }
+    },
+    "/v0/boards/ky" : {
+      "options" : {
+        "responses" : {
+          "204" : {
+            "description" : "204 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Methods" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Headers" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : { }
+          }
+        }
+      }
+    },
+    "/v0/boards/co/licenses/bulk-upload" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIStaLicen2ss8rvYEg35i"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "APIStackLicenseApiBoardPoolsAuthorizer9D2A9CD1" : [ ]
+        } ]
+      },
+      "options" : {
+        "responses" : {
+          "204" : {
+            "description" : "204 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Methods" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Headers" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : { }
+          }
+        }
+      }
+    },
+    "/v0/boards" : {
+      "options" : {
+        "responses" : {
+          "204" : {
+            "description" : "204 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Methods" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Headers" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : { }
+          }
+        }
+      }
+    },
+    "/v0/boards/co/licenses-noauth" : {
+      "post" : {
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/APIStaLicenMObmpi5X9gK4"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIStaLicenhRlQ9DP30WAQ"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options" : {
+        "responses" : {
+          "204" : {
+            "description" : "204 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Methods" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+              "Access-Control-Allow-Headers" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : { }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -354,12 +567,9 @@
         "maxLength" : 100,
         "type" : "array",
         "items" : {
-          "required" : [ "date_of_birth", "date_of_expiration", "date_of_issuance", "date_of_renewal", "first_name", "home_state_address", "last_name", "license_status", "license_type", "npi" ],
+          "required" : [ "date_of_birth", "date_of_expiration", "date_of_issuance", "date_of_renewal", "first_name", "home_state_city", "home_state_postal_code", "home_state_street_1", "home_state_street_2", "last_name", "license_status", "license_type", "ssn" ],
           "type" : "object",
           "properties" : {
-            "home_state_address" : {
-              "type" : "string"
-            },
             "date_of_issuance" : {
               "pattern" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
               "type" : "string",
@@ -380,21 +590,12 @@
             "last_name" : {
               "type" : "string"
             },
-            "date_of_expiration" : {
-              "pattern" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-              "type" : "string",
-              "format" : "date"
+            "home_state_city" : {
+              "minLength" : 2,
+              "type" : "string"
             },
             "middle_name" : {
               "type" : "string"
-            },
-            "first_name" : {
-              "type" : "string"
-            },
-            "date_of_renewal" : {
-              "pattern" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-              "type" : "string",
-              "format" : "date"
             },
             "license_status" : {
               "type" : "string",
@@ -405,9 +606,52 @@
               "additionalProperties" : {
                 "type" : "string"
               }
+            },
+            "ssn" : {
+              "type" : "string"
+            },
+            "home_state_street_2" : {
+              "type" : "string"
+            },
+            "home_state_street_1" : {
+              "maxLength" : 100,
+              "minLength" : 2,
+              "type" : "string"
+            },
+            "date_of_expiration" : {
+              "pattern" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type" : "string",
+              "format" : "date"
+            },
+            "home_state_postal_code" : {
+              "minLength" : 5,
+              "type" : "string"
+            },
+            "first_name" : {
+              "type" : "string"
+            },
+            "date_of_renewal" : {
+              "pattern" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type" : "string",
+              "format" : "date"
             }
           },
           "additionalProperties" : false
+        }
+      },
+      "APIStaLicen2ss8rvYEg35i" : {
+        "required" : [ "fields" ],
+        "type" : "object",
+        "properties" : {
+          "fields" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "url" : {
+            "type" : "string"
+          }
         }
       },
       "APIStaLicenhRlQ9DP30WAQ" : {

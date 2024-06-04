@@ -14,6 +14,10 @@ class TestLicensureApp(TestCase):
             context = json.load(f)['context']
         with open('cdk.context.example.json', 'r') as f:
             context.update(json.load(f))
+
+        # Suppresses lambda bundling for tests
+        context['aws:cdk:bundling-stacks'] = []
+
         app = LicensureApp(context=context)
 
         # Identify any findings from our AwsSolutions or HIPAASecurity rule sets

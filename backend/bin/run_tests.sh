@@ -3,8 +3,9 @@ REPORT="$1"
 
 # Run CDK tests, tracking code coverage in a new data file
 pytest --cov=. --cov-config=.coveragerc tests || exit "$?"
+for dir in lambdas delete-objects-lambda
 (
-  cd lambdas
+  cd "$dir"
   # Run lambda tests, appending data to the same data file
   pytest --cov=. --cov-config=.coveragerc --cov-append tests
 ) || exit "$?"

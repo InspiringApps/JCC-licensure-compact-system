@@ -10,6 +10,7 @@ from constructs import Construct
 
 from common_constructs.stack import Stack
 from common_constructs.webacl import WebACL, WebACLScope
+from stacks.api_stack.bulk_upload_url import BulkUploadUrl
 from stacks.api_stack.post_license import PostLicenses
 from stacks import persistent_stack as ps
 
@@ -96,31 +97,45 @@ class LicenseApi(RestApi):
         )
 
         v0_resource = self.root.add_resource('v0')
-
-        # No auth mock endpoints
-        license_noauth_resource = v0_resource.add_resource('licenses-noauth')
+        # /v0/boards
+        board_resource = v0_resource.add_resource('boards')
 
         for jurisdiction in compact_context['jurisdictions']:
-            jurisdiction_resource = license_noauth_resource.add_resource(jurisdiction)
+            jurisdiction_resource = board_resource.add_resource(jurisdiction)
+            # No auth mock endpoints
+            license_noauth_resource = jurisdiction_resource.add_resource('licenses-noauth')
+            # POST /v0/boards/co/licenses-noauth
+            method_options = MethodOptions(
+                authorization_type=AuthorizationType.NONE
+            )
             PostLicenses(
-                jurisdiction_resource,
-                method_options=MethodOptions(
-                    authorization_type=AuthorizationType.NONE
-                )
+                license_noauth_resource,
+                method_options=method_options
+            )
+            BulkUploadUrl(
+                resource=license_noauth_resource,
+                jurisdiction=jurisdiction,
+                method_options=method_options,
+                persistent_stack=persistent_stack
             )
 
-        # Authenticated endpoints
-        self.license_resource = v0_resource.add_resource('licenses')
-
-        for jurisdiction in compact_context['jurisdictions']:
-            jurisdiction_resource = self.license_resource.add_resource(jurisdiction)
+            # Authenticated endpoints
+            licenses_resource = jurisdiction_resource.add_resource('licenses')
+            # POST /v0/boards/co/licenses
+            method_options = MethodOptions(
+                authorization_type=AuthorizationType.COGNITO,
+                authorizer=self.board_users_authorizer,
+                authorization_scopes=[persistent_stack.board_users.scopes[jurisdiction].scope_name]
+            )
             PostLicenses(
-                jurisdiction_resource,
-                method_options=MethodOptions(
-                    authorization_type=AuthorizationType.COGNITO,
-                    authorizer=self.board_users_authorizer,
-                    authorization_scopes=[persistent_stack.board_users.scopes[jurisdiction].scope_name]
-                )
+                licenses_resource,
+                method_options=method_options
+            )
+            BulkUploadUrl(
+                resource=licenses_resource,
+                jurisdiction=jurisdiction,
+                method_options=method_options,
+                persistent_stack=persistent_stack
             )
 
         stack = Stack.of(self)
@@ -176,7 +191,6 @@ class LicenseApi(RestApi):
             validate_request_body=True,
             validate_request_parameters=True
         )
-
 
     @cached_property
     def message_response_model(self):

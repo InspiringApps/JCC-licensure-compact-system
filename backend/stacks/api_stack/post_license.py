@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from aws_cdk.aws_apigateway import Resource, MethodResponse, MockIntegration, IntegrationResponse, JsonSchema, \
-    JsonSchemaType, MethodOptions, AuthorizationType
+    JsonSchemaType, MethodOptions, AuthorizationType, Model
 
 # Importing module level to allow lazy loading for typing
 from . import license_api
@@ -51,7 +51,7 @@ class PostLicenses:
         )
 
     @staticmethod
-    def get_post_license_model(api: license_api.LicenseApi):
+    def get_post_license_model(api: license_api.LicenseApi) -> Model:
         """
         Return the Post License Model, which should only be created once per API
         """
@@ -67,11 +67,14 @@ class PostLicenses:
                 items=JsonSchema(
                     type=JsonSchemaType.OBJECT,
                     required=[
-                        'npi',
+                        'ssn',
                         'first_name',
                         'last_name',
                         'date_of_birth',
-                        'home_state_address',
+                        'home_state_street_1',
+                        'home_state_street_2',
+                        'home_state_city',
+                        'home_state_postal_code',
                         'jurisdiction',
                         'license_type',
                         'date_of_issuance',
@@ -81,6 +84,7 @@ class PostLicenses:
                     ],
                     additional_properties=False,
                     properties={
+                        'ssn': JsonSchema(type=JsonSchemaType.STRING),
                         'npi': JsonSchema(type=JsonSchemaType.STRING),
                         'first_name': JsonSchema(type=JsonSchemaType.STRING),
                         'middle_name': JsonSchema(type=JsonSchemaType.STRING),
@@ -94,7 +98,10 @@ class PostLicenses:
                             type=JsonSchemaType.OBJECT,
                             additional_properties=JsonSchema(type=JsonSchemaType.STRING)
                         ),
-                        'home_state_address': JsonSchema(type=JsonSchemaType.STRING),
+                        'home_state_street_1': JsonSchema(type=JsonSchemaType.STRING, min_length=2, max_length=100),
+                        'home_state_street_2': JsonSchema(type=JsonSchemaType.STRING),
+                        'home_state_city': JsonSchema(type=JsonSchemaType.STRING, min_length=2),
+                        'home_state_postal_code': JsonSchema(type=JsonSchemaType.STRING, min_length=5),
                         'license_type': JsonSchema(
                             type=JsonSchemaType.STRING,
                             enum=api.compact_context['license_types']
