@@ -8,7 +8,6 @@ on:
   push:
     branches:
       - development
-      - infra/frontend-test-deploy-pipeline # @TODO: Remove before publishing PR
     paths:
       - webroot/**
 
@@ -19,7 +18,7 @@ on:
 jobs:
   WebrootDeploy:
     # Only run this workflow in certian repos
-    # if: github.repository == 'csg-org/CompactConnect' # @TODO: Re-enable before publishing PR
+    if: github.repository == 'csg-org/CompactConnect'
 
     # Runner OS
     runs-on: ubuntu-latest
@@ -126,8 +125,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.26.0
         # https://github.com/slackapi/slack-github-action?tab=readme-ov-file#technique-2-slack-app
         with:
-          # channel-id: 'z_jcc_and_inspiringapps' # @TODO: Re-enable before publishing PR
-          channel-id: 'app-test' # @TODO: Remove before publishing PR
+          channel-id: 'z_jcc_and_inspiringapps'
           # https://app.slack.com/block-kit-builder
           payload: |
             {
